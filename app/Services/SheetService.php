@@ -48,16 +48,46 @@ class SheetService
     protected function getFromApi()
     {
         return $this->spreadsheetService->getSpreadsheetFeed()
-            ->getByTitle('app-teste')
+            ->getByTitle('Pl1')
             ->getWorksheetFeed()
             ->getByTitle('Página1')
             ->getCellFeed()
             ->toArray();
     }
 
-    public function get()
+    public function realizadas()
     {
-        return $this->collection;
+        
+        $valores =  $this->collection->groupBy('Data')->filter(function ($value, $key)
+        {
+         // $d = date('d/m/Y');
+         $d = '01/02/2019';
+          return strcmp($key,$d)==0; })->flatMap(function ($value)
+          {
+            $new_value = [];
+            foreach($value as $v)
+            {
+              if($v['Cirurgia Suspensa? (Sim ou Não)']=='NÃO')
+                $new_value[] = $v;
+            }
+            return $new_value;
+        })->count();
+    return $valores;
+
+    }
+    public function total(){
+      $valores =  $this->collection->groupBy('Data')->filter(function ($value, $key)
+        {
+          $d = '01/02/2019';
+          return strcmp($key,$d)==0; })->flatMap(function ($value)
+          {
+             foreach($value as $v)
+            {
+                $new_value[] = $v;
+            }
+            return $new_value;
+            })->count();
+      return $valores;
     }
 
     public function find($id)
